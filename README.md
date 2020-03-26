@@ -33,15 +33,13 @@ You first sketch a “friend”, which means giving it a name and choosing its i
 I create and run this script on ubuntu 19.10 and the VMFriend.py file use the gnome-terminale for "summoning" and gedit for algorithms editing. You can change the gedit to any text editor of your choice and you can also change de terminal used. In the VMFriend.py file there is a section for that :
 ```Python3
 # DEFAULT TERMINAL TOOL
-edit_tool = "gedit"   # You can use other things like nano or vim
+edit_tool = "gedit"   # You can use other things like nano, vim or your favorite code editor
 subprocess_tool = "gnome-terminal"    # you can probably use other "terminals" here
 ```
 
 #### `Warning!`
-If you use another terminal environment you might need to adjust one line in the "summon_vir_friend" function to add some specific argument relative to your chosen terminal environment. The line you should change starts with the next code and it's a list of bash command. You can look at python "subprocess" for more info.
-```Python3
-temp_cmd = [subprocess_tool, "--", "python3", "Algorythmz.py", "run",[... .. .]
-```
+If you use another terminal environment you might need to adjust one line in the "summon_vir_friend" function to add some specific argument relative to your chosen terminal environment. The line you should change starts with "temp_cmd = " and are the subprocess arguments. You can look at python "subprocess" for more info.
+
 
 ## Dependencies
 I use to run it with python3 and both file use mido, numpy & panda module and you should be able to install them easely like this :
@@ -69,14 +67,15 @@ ALGORITHM : the selected algorithm.<br />
 ### Base:<br />
 - <b>Test</b> : Print 5 time "This is a test" then close
 - <b>Flood_me_input</b> : Print the input MIDI signals
+- <b>MIDI_Through_Simple</b> : Pass the MIDI signle from one device to another
+- <b>Micro_Randomize_Through</b> : Send a random note at a random velocity at random interval but sync with MIDI input
+- <b>KORG_KAOSS</b> : Translate MIDI note to X, Y coordinate in CC Values. This was made to be able to send MIDI notes to the KORG KP3 and/or the KAOSSILATOR.
 
 ### Extra<br />
-- <b>KORG_KAOSS</b> : Translate MIDI note to X, Y coordinate in CC Values. This was made to be able to send MIDI notes to the KORG KP3 and/or the KAOSSILATOR.
 - <b>KAOSS_AND_KP3</b> : Same as KORG_KAOSS but you can control both at the same time. It uses channel 0 and 1 to route the signal to the specified machine.
+- <b>RANDOM_VDRUM_TO_KORG</b> : Randomize MIDI signal in CC for Korg from MIDI drum, or any other MIDI instrument.
 
 ### To do:<br />
-- <b>Midi_through</b> : Pass all signals from IN to OUT
 - <b>Clock_me</b> : Pass clock signal from IN to OUT
-- <b>Signal_Only</b> : Pass only certain signals (Clock, CC, Note, ...) from IN to OUT
 
 ----------------------------------------------------

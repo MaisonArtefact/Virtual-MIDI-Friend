@@ -1,5 +1,6 @@
 import sys
 import time
+import random
 import mido
                                                     
 # Algorithmz section          
@@ -18,18 +19,47 @@ import mido
 class algorithmzz(object):
 
     # Test algorythm
-    def test(self):
+    def Test(self):
         for i in range (0, 5):
            print('This is a test !!', end='\r')
            time.sleep(2.5)
 
     # Algorithm that print the input signals of the first elements in the MIDI IN list
-    def flood_me_input(self):
+    def Flood_Me_Input(self):
         try:
             while True:
                 with mido.open_input(MIDI_IN[0]) as inport:
                     for msg in inport:
                         print(msg)
+        except KeyboardInterrupt :
+            pass
+        return 0   
+        
+    # Algorithm to pass all messages receive from only 1 MIDI Input to only 1 output
+    def MIDI_Through_Simple(self):
+        try:
+            while True:
+                with mido.open_input(MIDI_IN[0]) as inport:
+                    for msg in inport:
+                        port1.send(msg)
+                        print(msg)
+        except KeyboardInterrupt :
+            pass
+        return 0    
+        
+    # Algorithm that send a random note at a random velocity 
+    # at random interval with MIDI input
+    def Micro_Randomize_Through(self):
+        try:
+            while True:
+                with mido.open_input(MIDI_IN[0]) as inport:
+                    for msg in inport:
+                        ran = random.randint(1,10)
+                        if (ran <= 3):
+                            msg.velocity = random.randint(25,125)
+                            msg.note = random.randint(39, 77)
+                            port1.send(msg)
+                            print(msg)
         except KeyboardInterrupt :
             pass
         return 0
@@ -41,15 +71,12 @@ class algorithmzz(object):
         # Basic CC Control
         msg_on = mido.Message('control_change', channel=0, control=92, value=127, time=0)
         msg_off = mido.Message('control_change', channel=0, control=92, value=0, time=0)
-            # Transfering Note and velocity into X and Y value for the KAOSSILATOR PRO
+        # Transfering Note and velocity into X and Y value for the KAOSSILATOR PRO
         def send_note_to_kaoss(Val, Velo):
             msg_out_x = mido.Message('control_change', channel=0, control=12, value=Val)
             msg_out_y = mido.Message('control_change', channel=0, control=13, value=Velo)
             port1.send(msg_out_x)
             port1.send(msg_out_y)
-            #print("[OUT] - " + str(msg_out_x), end="\r")
-            #print("[OUT] - " + str(msg_out_y), end="\r")
-
         # Translate the signals from a MIDI to some CC for a KAOSSILATOR PRO
         while True:
             with mido.open_input(MIDI_IN[0]) as inport:
@@ -71,13 +98,12 @@ class algorithmzz(object):
                         except:
                             pass
 
-    # Control KAOSSILATOR & KP3 !!
+    # Control both KAOSSILATOR & KP3 !!
     # Use channel 0 and 1 to assign device                    
     def KAOSS_AND_KP3(self):
         # Basic CC Control
         msg_on = mido.Message('control_change', channel=0, control=92, value=127, time=0)
         msg_off = mido.Message('control_change', channel=0, control=92, value=0, time=0)
-
         # Translate the signals from a MIDI note to CC for a KAOSSILATOR PRO and KP3
         while True:
             with mido.open_input(MIDI_IN[0]) as inport:
@@ -90,16 +116,16 @@ class algorithmzz(object):
                                 msg_out_y = mido.Message('control_change', channel=0, control=13, value=msg.velocity)
                                 port1.send(msg_out_x)
                                 port1.send(msg_out_y)
-                                print("[OUT] - " + str(msg_out_x), end="\r")
-                                #print("[IN] - "+str(msg), end="\r")
+                                #print("[OUT] - " + str(msg_out_x), end="\r")
+                                print("[IN] - "+str(msg), end="\r")
                             elif (msg.channel == 1):
                                 port2.send(msg_on)
                                 msg_out_x = mido.Message('control_change', channel=0, control=12, value=int(((msg.note-34)/93)*127))
                                 msg_out_y = mido.Message('control_change', channel=0, control=13, value=msg.velocity)
                                 port2.send(msg_out_x)
                                 port2.send(msg_out_y)
-                                print("[OUT] - " + str(msg_out_x), end="\r")
-                                #print("[IN] - "+str(msg), end="\r")
+                                #print("[OUT] - " + str(msg_out_x), end="\r")
+                                print("[IN] - "+str(msg), end="\r")
                             else:
                                 pass
                         elif (msg.type == 'note_off'):
@@ -113,7 +139,40 @@ class algorithmzz(object):
                     except:
                             pass
 
-
+    # Algorithm to control a KAOSSILATOR or a KAOSPAD from my ROLAND V-Drum TD-11 
+    # All notes received from TD-11 are converted to CC parameter for X and Y KORG pads
+    def RANDOM_VDRUM_TO_KORG(self):
+        # Basic CC Control
+        msg_on = mido.Message('control_change', channel=0, control=92, value=127, time=0)
+        msg_off = mido.Message('control_change', channel=0, control=92, value=0, time=0)
+        # Transfering Note and velocity into X and Y
+        def send_note_to_kaoss(Val, Velo):
+            msg_out_x = mido.Message('control_change', channel=0, control=12, value=Val)
+            msg_out_y = mido.Message('control_change', channel=0, control=13, value=Velo)
+            port1.send(msg_out_x)
+            port1.send(msg_out_y)
+        # RANDOMIZE the signals from a MIDI to CC for a KAOSSILATOR PRO
+        count = 0
+        while True:
+            with mido.open_input(MIDI_IN[0]) as inport:
+                for msg in inport:
+                    ran = random.randint(1,2)
+                    try:
+                        if msg.type == 'note_on' and ran == 1: # Double condition for a better "flow"
+                            port1.send(msg_on)
+                            send_note_to_kaoss(msg.note, msg.velocity)
+                            print("[IN] - "+str(msg), end="\r")
+                        elif msg.type == 'note_off' and ran == 2: # Double condition for a better "flow"
+                            port1.send(msg_off)
+                        else :
+                            pass
+                        print("[IN] - "+str(msg), end="\r")
+                    except:
+                        try:
+                            if (msg.control > 0):
+                                print("[IN] - "+str(msg), end="\r")
+                        except:
+                            pass
 
 
 # - - - - - - - - - - - -  END OF ALGORITHMZ CLASS - - - - - - - - - - - -
